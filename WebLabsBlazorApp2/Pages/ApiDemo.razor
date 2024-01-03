@@ -1,0 +1,35 @@
+﻿@page "/apidemo"
+@using WebLabsBlazorApp2.Data;
+@using WebLabsBlazorApp2.Components;
+@inject HttpClient client
+@* 
+@inject IHttpClientFactory clientFactory *@
+
+  <div class="container">
+    <DishesList @bind = "dishes"
+    SelectedObjectChanged="ShowDetails"></DishesList>
+  
+      <DisDetails @bind = "dishes"></DisDetails>
+</div>
+
+
+
+@code {
+
+    [Parameter]
+    public IEnumerable<ListViewModel> dishes { get; set; }
+    string apiBaseAddress = "https://localhost:7140/Api/Dishes";
+    protected override async Task OnInitializedAsync()
+    {
+        dishes = await client.GetFromJsonAsync<IEnumerable<ListViewModel>>(apiBaseAddress);
+    }
+
+    [Parameter]
+    public DetailsViewModel SelectedDish { get; set; }
+    private async Task ShowDetails(int id)
+    {
+        SelectedDish =  await client.GetFromJsonAsync<DetailsViewModel>(apiBaseAddress + $"/{id}");
+    }
+}
+
+
